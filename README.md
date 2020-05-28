@@ -1,4 +1,4 @@
-# Snakemake-recipes
+# Snakemake food recipes
 
 You can find the recipes in snakemake files here. 
 I love cooking and coding. This is my approach to catalog my favotire recipes in snakemake pipelines. 
