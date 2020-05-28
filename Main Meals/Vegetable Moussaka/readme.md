@@ -8,4 +8,4 @@ Layers
 
 Ready to eat!
 
-![layers](moussaka-on-plate.jpeg)
+![layers](moussaka-on-plate.jpg)
