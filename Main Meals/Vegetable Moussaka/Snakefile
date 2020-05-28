@@ -1,0 +1,96 @@
+#This is vegetable moussaka recipe
+
+rule main:
+  input: "diningTable/moussaka.veg"
+
+rule final:
+  output: "diningTable/moussaka.veg"
+  input: "casserole/moussaka.assembly"
+  params:
+    temperature = 200,
+    time = 20
+  shell: "Bake {input} -c {params.temperature} -t {params.time} > {output}"
+
+rule assemble:
+  output: "casserole/moussaka.assembly"
+  input:
+   roasted_aubergine = "oven/aubergine.roasted",
+   roasted_potato = "oven/potato.roasted",
+   roasted_courgette = "oven/courgette.roasted",
+   sauce = "saucepan/lentil_tomato.sauce",
+   cheese = "bowl/ricotta.spread"
+  shell:
+   r"""layer1 | layer {input.roasted_potato}
+       layer2 | spread -q 30% {input.sauce}
+       layer3 | layer -q 50% {input.roasted_aubergine}
+       layer4 | spread -q 30% {input.sauce}
+       layer5 | layer {input.roasted_courgette}
+       layer6 | spread -q 40% {input.sauce}
+       layer7 | layer -q 50% {input.roasted_aubergine}
+       layer8 | spread {input.cheese}
+    """
+
+rule cheese:
+  output: "bowl/ricotta.spread"
+  input:
+   ricotta = "fridge/ricotta.tub",
+   goats_cheese = "fridge/goats_cheese.yummy"
+  params:
+   chadder = "fridge/some_chadder.optional"
+  shell: "whip {input.ricotta} {input.goats_cheese} {params.chadder} > {output}"
+
+rule sauce:
+  output: "saucepan/lentil_tomato.sauce"
+  input:
+   lentils = "pantry/lentils.cooked",
+   tomato = "pantry/chopped_tomato.can",
+   onion = "pantry/onion.chopped",
+   garlic = "pantry/garlic.crushed",
+   oregano = "fridge/oregano.fresh",
+   thyme = "fridge/thyme.fresh"
+  params:
+   time1 = "10mins",
+   time2 = "3mins"
+  shell:
+   r"""heat saucepan | cook {input.onion} | turn transparent
+       add {input.garlic},{input.oregano},{input.thyme} | stir | cook -t 1min
+       add {input.tomato} | cook -t {params.time1}
+       add {input.lentils} | cook -t {params.time2} > {output}
+    """
+
+rule roasting:
+ output:
+  roasted_aubergine = "oven/aubergine.roasted",
+  roasted_potato = "oven/potato.roasted",
+  roasted_courgette = "oven/courgette.roasted",
+  chopped = temp("veggies.chopped")
+ input:
+  aubergine = "fridge/aubergine.raw",
+  potato = "pantry/potato.raw",
+  courgette = "fridge/courgette.raw"
+ params:
+  width = "1cm",
+  temperature = "200C",
+  time = "20mins",
+  seasoning = "oil, salt and pepper"
+ shell:
+  r"""preheat oven -c {params.temperature}
+      cut {input.aubergine} {input.potato} {input.courgette} | discs -l {params.width} > {output.chopped}
+      drizzle {params.seasoning} over {output.chopped}
+      roast {output.chopped} -c {params.temperature} -t {params.time} > tee -a {output.roasted_aubergine} {output.roasted_potato} {output.roasted_courgette}
+  """
+
+rule ingredients: 
+ output:
+  aubergine = "fridge/aubergine.raw",
+  potato = "pantry/potato.raw",
+  courgette = "fridge/courgette.raw",
+  lentils = "pantry/lentils.cooked",
+  tomato = "pantry/chopped_tomato.can",
+  onion = "pantry/onion.chopped",
+  garlic = "pantry/garlic.crushed",
+  oregano = "fridge/oregano.fresh",
+  thyme = "fridge/thyme.fresh",
+  ricotta = "fridge/ricotta.tub",
+  goats_cheese = "fridge/goats_cheese.yummy"
+ shell: "buy {output}"
