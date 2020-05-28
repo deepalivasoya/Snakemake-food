@@ -1,3 +1,11 @@
 Vegetable Moussaka
 
-![Vegetable Moussaka](moussaka-top.jpeg)
+![vegetableMoussaka](moussaka-top.jpeg)
+
+Layers
+
+![layers](moussaka-layers.jpeg)
+
+Ready to eat!
+
+![layers](moussaka-on-plate.jpeg)
