@@ -1,4 +1,5 @@
-Bailey's lasagna
+Bailey's lasagna.
+
 Check out the Snakefile for recipe! 
 
 ![plate](Baileys-lasagna-plate.jpeg)
