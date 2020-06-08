@@ -1,0 +1,97 @@
+rule main:
+  input: "diningTable/baileys_lasagna.dessert"
+
+rule cake_ingredients: 
+ output:
+  flour = "pantry/plain_flour.125g",
+  baking_powder = "pantry/baking_powder.1tsp",
+  cocoa_powder = "pantry/cocoa_powder.25g",
+  chocolate = "pantry/chocolate.dark.pieces.125g",
+  sugar = "pantry/light_muscovado.125g",
+  butter = "pantry/unsalted_butter.softened.125g",
+  eggs = "kitchen/eggs.2",
+  vanilla = "pantry/vanilla_paste.1tsp",
+  coffee = "pantry/instant_coffee.1tbsp",
+  buttermilk = "fridge/buttermilk.100ml",
+  baileys = "bar/baileys.1cup"
+ shell: "touch {output}"
+
+rule cream_ingredients:
+ output:
+  mascarpone = "fridge/mascarpone.250g",
+  cream = "fridge/double_cream.150ml",
+  sugar = "pantry/caster_sugar.50g",
+  vanilla = "pantry/vanilla_paste.2tsp"
+ shell: "touch {output}"
+
+rule baking:
+ output:
+  cake = "chocolate_cake.yum",
+  dry_mixture = temp("dry_mixture.mixed"),
+  wet_mixture = temp("wet_mixture.mixed"),
+  batter = temp("cake_batter.mixed")
+ input:
+  flour = "pantry/plain_flour.125g",
+  baking_powder = "pantry/baking_powder.1tsp",
+  cocoa_powder = "pantry/cocoa_powder.25g",
+  chocolate = "pantry/chocolate.dark.pieces.125g",
+  sugar = "pantry/light_muscovado.125g",
+  butter = "pantry/unsalted_butter.softened.125g",
+  eggs = "kitchen/eggs.2",
+  vanilla = "pantry/vanilla_paste.1tsp",
+  coffee = "pantry/instant_coffee.1tbsp",
+  buttermilk = "fridge/buttermilk.100ml"
+ params:
+  cake_tin = "rectangle_caketin.35x24cm",
+  temperature = "160C",
+  time = "20mins"
+ shell:
+  r"""preheat oven -c {params.temperature}
+      melt {input.chocolate} {input.butter} {input.sugar} --bowl --over_boiling_water | cool | mix {input.eggs} {input.vanilla} {input.coffee} {input.buttermilk} > {output.wet_mixture}
+      mix {input.flour} {input.baking_powder} {input.cocoa_powder} > {output.dry_mixture}
+      mix {output.dry_mixture} {output.wet_mixture} > {output.batter}
+      pour {output.batter} > {params.cake_tin}
+      bake -c {params.temperature} -t {params.time} {output.batter} > {output.cake}
+  """
+
+rule baileys:
+  output: 
+   sponges = "cake_sponges.soaked",
+  input:
+   cake = "chocolate_cake.yum",
+   baileys = "bar/baileys.1cup"
+  params: 
+   brush = "kitchen/brush",
+   number_of_layers = 3
+  shell: "cut -f {params.number_of_layers} {input.cake} | brush {input.baileys} --use {params.brush} > {output.sponges}"
+
+rule cream:
+  output: "bowl/cream.whipped"
+  input:
+   mascarpone = "fridge/mascarpone.250g",
+   cream = "fridge/double_cream.150ml",
+   sugar = "pantry/caster_sugar.50g",
+   vanilla = "pantry/vanilla_paste.2tsp"
+  shell: "mix {input.mascarpone} {input.cream} {input.sugar} {input.vanilla} | whip > {output}"
+
+rule assemble:
+  output: "tray/lasagna.assembly"
+  input:
+   sponges = "cake_sponges.soaked",
+   cream = "bowl/cream.whipped"
+  params:
+   parallel_sep = "{}"
+  shell: "cat {input.sponges} | parallel 'layer {params.parallel_sep} | spread {input.cream}' > {output}"
+
+rule final:
+  output: "diningTable/baileys_lasagna.dessert"
+  input: 
+   assembly = "tray/lasagna.assembly",
+  params:
+    sprinklers = "pantry/sprinklers.fun",
+    fridge_time = "1hr"
+  shell: "sprinkle --your_choice {params.sprinklers} {input.assembly} | refrigerate -t {params.fridge_time} > {output}"
+
+
+
+
