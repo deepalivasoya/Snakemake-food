@@ -1,0 +1,71 @@
+rule main:
+  input: "breakfastTable/breakfast_maffins.12"
+
+rule ingredients: 
+ output:
+  eggs = "kitchen/eggs.3",
+  milk = "fridge/milk.150ml",
+  oil = "pantry/oliveOil.100ml",
+  cheese = "fridge/cheddar_cheese.100g",
+  garlic = "pantry/garlic_cloves.2",
+  chilli = "fridge/chilli.1",
+  thyme = "garden/thyme.2springs",
+  peas = "freezer/peas.1/2cup",
+  carrot = "fridge/carrot.1",
+  spinach = "fridge/spinach.2cups",
+  green_beans = "fridge/green_beans.20",
+  flour = "pantry/self_raising_flour.1cup",
+  cases = "storage/muffin_cases.silicon.resuable"
+ shell: "touch {output}"
+
+rule prepare:
+ output:
+  chopped_veggies = "chopping_board/chopped_veggies.fine",
+  grated_cheese = "grater/cheese.grated",
+  minced_garlic = "garlic_press/garlic.minced",
+  thyme_leaves = "use_hands/thyme.leaves"
+ input:
+  garlic = "pantry/garlic_cloves.2",
+  chilli = "fridge/chilli.1",
+  carrot = "fridge/carrot.1",
+  spinach = "fridge/spinach.2cups",
+  green_beans = "fridge/green_beans.20",
+  cheese = "fridge/cheddar_cheese.100g",
+  thyme = "garden/thyme.2springs"
+ shell:
+  r"""chop --fine {input.carrot} {input.spinach} {input.green_beans} {input.chilli} > {output.chopped_veggies}
+      grate {input.cheese} > {output.grated_cheese}
+      mince {input.garlic} > {output.minced_garlic}
+      remove --leaves {input.thyme} > {output.thyme_leaves}
+  """
+
+rule mixing:
+ output: "bowl/mixture.mixed"
+ input:
+  chopped_veggies = "chopping_board/chopped_veggies.fine",
+  grated_cheese = "grater/cheese.grated",
+  minced_garlic = "garlic_press/garlic.minced",
+  thyme_leaves = "use_hands/thyme.leaves",
+  eggs = "kitchen/eggs.3",
+  milk = "fridge/milk.150ml",
+  oil = "pantry/oliveOil.100ml",
+  peas = "freezer/peas.1/2cup",
+  flour = "pantry/self_raising_flour.1cup"
+ params: 
+  seasoning = "salt and pepper",
+  extra_seasoning = "cumin powder"
+ shell: "mix {input} {params} > {output}"
+
+rule baking:
+ output: "breakfastTable/breakfast_maffins.12"
+ input: 
+  batter = "bowl/mixture.mixed",
+  cases = "storage/muffin_cases.silicon.resuable"
+ params:
+  temperature = 200,
+  time = "15min"
+ shell:
+  r"""preheat -oven -c {params.temperature}
+      pour {input.batter} --inside {input.cases} | bake -t {params.time} > {output}
+  """
+
