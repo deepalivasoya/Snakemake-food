@@ -2,11 +2,11 @@ Breakfast savory muffins
 
 Check out the Snakefile for recipe! 
 
-![muffins1](muffins1.jpeg)
+![muffins1](muffin1.jpeg)
 
 Ready to eat!
-![muffins2](muffins2.jpeg)
+![muffins2](muffin2.jpeg)
 
 Yum fiiling...
 
-![muffins3](muffins3.jpeg)
+![muffins3](muffin3.jpeg)
